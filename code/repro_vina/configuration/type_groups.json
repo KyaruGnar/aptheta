@@ -1,0 +1,66 @@
+{
+    "autodock4": [
+        "H", "HD", "HS",
+        "C", "A", "CG0", "CG1", "CG2", "CG3",
+        "N", "NA", "NS", "OA", "OS",
+        "F", "Cl", "Br", "I",
+        "P", "SA", "S",
+        "Mg", "Ca", "Mn", "Fe", "Zn",
+        "Si", "At",
+        "G0", "G1", "G2", "G3", "W",
+        "CL", "BR", "MG", "CA", "MN", "FE", "ZN"
+    ],
+
+    "element": [
+        "H",
+        "C", "N", "O",
+        "F", "Cl", "Br", "I",
+        "P", "S",
+        "Mg", "Ca", "Mn", "Fe", "Zn",
+        "Si", "At",
+        "Dummy"
+    ],
+
+    "xscore": [
+        "C_H", "C_H_CG0", "C_H_CG1", "C_H_CG2", "C_H_CG3",
+        "C_P", "C_P_CG0", "C_P_CG1", "C_P_CG2", "C_P_CG3",
+        "N_P", "N_A", "N_D", "N_DA",
+        "O_P", "O_A", "O_D", "O_DA",
+        "F_H", "Cl_H", "Br_H", "I_H",
+        "P_P", "S_P",
+        "Si", "At",
+        "Met_D",
+        "G0", "G1", "G2", "G3", "W"
+    ],
+
+    "type_from_ad4_to_el": {
+        "H": "H", "HD": "H", "HS": "H",
+        "C": "C", "A": "C",
+        "N": "N", "NA": "N", "NS": "N",
+        "OA": "O", "OS": "O",
+        "F": "F",
+        "Mg": "Mg", "MG": "Mg",
+        "P": "P",
+        "SA": "S", "S": "S",
+        "Cl": "Cl", "CL": "Cl",
+        "Ca": "Ca", "CA": "Ca",
+        "Mn": "Mn", "MN": "Mn",
+        "Fe": "Fe", "FE": "Fe",
+        "Zn": "Zn", "ZN": "Zn",
+        "Br": "Br", "BR": "Br",
+        "I": "I",
+        "Si": "Si",
+        "At": "At",
+        "CG0": "C", "CG1": "C", "CG2": "C", "CG3": "C",
+        "G0": "Dummy", "G1": "Dummy", "G2": "Dummy", "G3": "Dummy",
+        "W": "Dummy"
+    },
+
+    "metals": ["Mg", "Ca", "Mn", "Fe", "Zn"],
+    "extra_metals": ["Cu", "Na", "K", "Hg", "Co", "U", "Cd", "Ni"],
+    "gluey": ["G0", "G1", "G2", "G3"],
+    "hydrophobic": ["C_H", "F_H", "Cl_H", "Br_H", "I_H"],
+    "donor": ["N_A", "N_DA", "O_A", "O_DA"],
+    "acceptor": ["N_D", "N_DA", "O_D", "O_DA", "Met_D"]
+
+}

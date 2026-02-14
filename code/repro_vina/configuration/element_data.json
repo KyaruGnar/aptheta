@@ -1,0 +1,259 @@
+{
+    "#overall_annotation": [
+        "All values of radii are given in Ångstrom which equals 100 pm.",
+        "The reference URL is https://www.webelements.com.",
+        "van_der_Waals_radius' literature sources: S. Avarez, 2013, 42, 8617-8636.(See https://pubs.rsc.org/en/content/articlelanding/2013/dt/c3dt50599e)"
+    ],
+
+    "periodic_table": [
+        null,
+        "H", "He",
+        "Li", "Be", "B", "C", "N", "O", "F", "Ne",
+        "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar",
+        "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr",
+        "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I", "Xe",
+        "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At", "Rn",
+        "Fr", "Ra", "Ac", "Th", "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm", "Md", "No", "Lr"
+    ],
+
+    "H": {
+        "atomic_number": 1,
+        "atomic_radius": {
+            "empirical": 0.25,
+            "calculated": 0.53
+        },
+        "covalent_radius": {
+            "2008 values": 0.31,
+            "molecular_bond": [null, 0.32, null, null],
+            "empirical": 0.37
+        },
+        "van_der_Waals_radius": 1.2
+    },
+
+    "#C": "The covalent_radius(2008 values) is for sp3 C while 73 pm for sp2 carbon and 69 for sp carbon.",
+    "C": {
+        "atomic_number": 6,
+        "atomic_radius": {
+            "empirical": 0.70,
+            "calculated": 0.67
+        },
+        "covalent_radius": {
+            "2008 values": 0.76,
+            "molecular_bond": [null, 0.75, 0.67, 0.60],
+            "empirical": 0.77
+        },
+        "van_der_Waals_radius": 1.77
+    },
+
+    "N": {
+        "atomic_number": 7,
+        "atomic_radius": {
+            "empirical": 0.65,
+            "calculated": 0.56
+        },
+        "covalent_radius": {
+            "2008 values": 0.71,
+            "molecular_bond": [null, 0.71, 0.60, 0.54],
+            "empirical": 0.75
+        },
+        "van_der_Waals_radius": 1.66
+    },
+
+    "O": {
+        "atomic_number": 8,
+        "atomic_radius": {
+            "empirical": 0.60,
+            "calculated": 0.48
+        },
+        "covalent_radius": {
+            "2008 values": 0.66,
+            "molecular_bond": [null, 0.63, 0.57, 0.53],
+            "empirical": 0.73
+        },
+        "van_der_Waals_radius": 1.50
+    },
+
+    "F": {
+        "atomic_number": 9,
+        "atomic_radius": {
+            "empirical": 0.50,
+            "calculated": 0.42
+        },
+        "covalent_radius": {
+            "2008 values": 0.57,
+            "molecular_bond": [null, 0.64, 0.59, 0.53],
+            "empirical": 0.72
+        },
+        "van_der_Waals_radius": 1.46
+    },
+
+    "Mg": {
+        "atomic_number": 12,
+        "atomic_radius": {
+            "empirical": 1.50,
+            "calculated": 1.45
+        },
+        "covalent_radius": {
+            "2008 values": 1.41,
+            "molecular_bond": [null, 1.39, 1.32, 1.27],
+            "empirical": 1.30
+        },
+        "van_der_Waals_radius": 2.51
+    },
+
+    "Si": {
+        "atomic_number": 14,
+        "atomic_radius": {
+            "empirical": 1.10,
+            "calculated": 1.11
+        },
+        "covalent_radius": {
+            "2008 values": 1.11,
+            "molecular_bond": [null, 1.16, 1.07, 1.02],
+            "empirical": 1.11
+        },
+        "van_der_Waals_radius": 2.19
+    },
+
+    "P": {
+        "atomic_number": 15,
+        "atomic_radius": {
+            "empirical": 1.00,
+            "calculated": 0.98
+        },
+        "covalent_radius": {
+            "2008 values": 1.07,
+            "molecular_bond": [null, 1.11, 1.02, 0.94],
+            "empirical": 1.06
+        },
+        "van_der_Waals_radius": 1.90
+    },
+
+    "S": {
+        "atomic_number": 16,
+        "atomic_radius": {
+            "empirical": 1.00,
+            "calculated": 0.88
+        },
+        "covalent_radius": {
+            "2008 values": 1.05,
+            "molecular_bond": [null, 1.03, 0.94, 0.95],
+            "empirical": 1.02
+        },
+        "van_der_Waals_radius": 1.89
+    },
+
+    "Cl": {
+        "atomic_number": 17,
+        "atomic_radius": {
+            "empirical": 1.00,
+            "calculated": 0.79
+        },
+        "covalent_radius": {
+            "2008 values": 1.02,
+            "molecular_bond": [null, 0.99, 0.95, 0.93],
+            "empirical": 0.99
+        },
+        "van_der_Waals_radius": 1.82
+    },
+
+    "Ca": {
+        "atomic_number": 20,
+        "atomic_radius": {
+            "empirical": 1.80,
+            "calculated": 1.94
+        },
+        "covalent_radius": {
+            "2008 values": 1.76,
+            "molecular_bond": [null, 1.71, 1.47, 1.33],
+            "empirical": 1.74
+        },
+        "van_der_Waals_radius": 2.62
+    },
+
+    "#Mn": "The covalent_radius(2008 values) is for low spin while 161 pm for high spin manganese.",
+    "Mn": {
+        "atomic_number": 25,
+        "atomic_radius": {
+            "empirical": 1.40,
+            "calculated": 1.61
+        },
+        "covalent_radius": {
+            "2008 values": 1.39,
+            "molecular_bond": [null, 1.19, 1.05, 1.03],
+            "empirical": 1.39
+        },
+        "van_der_Waals_radius": 2.45
+    },
+
+    "#Fe": "The covalent_radius(2008 values) is for low spin while 152 pm for high spin manganese.",
+    "Fe": {
+        "atomic_number": 26,
+        "atomic_radius": {
+            "empirical": 1.40,
+            "calculated": 1.56
+        },
+        "covalent_radius": {
+            "2008 values": 1.32,
+            "molecular_bond": [null, 1.16, 1.09, 1.02],
+            "empirical": 1.25
+        },
+        "van_der_Waals_radius": 2.44
+    },
+
+    "Zn": {
+        "atomic_number": 30,
+        "atomic_radius": {
+            "empirical": 1.35,
+            "calculated": 1.42
+        },
+        "covalent_radius": {
+            "2008 values": 1.22,
+            "molecular_bond": [null, 1.18, 1.20, null],
+            "empirical": 1.31
+        },
+        "van_der_Waals_radius": 2.39
+    },
+
+    "Br": {
+        "atomic_number": 35,
+        "atomic_radius": {
+            "empirical": 1.15,
+            "calculated": 0.94
+        },
+        "covalent_radius": {
+            "2008 values": 1.20,
+            "molecular_bond": [null, 1.14, 1.09, 1.10],
+            "empirical": 1.14
+        },
+        "van_der_Waals_radius": 1.86
+    },
+
+    "I": {
+        "atomic_number": 53,
+        "atomic_radius": {
+            "empirical": 1.40,
+            "calculated": 1.15
+        },
+        "covalent_radius": {
+            "2008 values": 1.39,
+            "molecular_bond": [null, 1.33, 1.29, 1.25],
+            "empirical": 1.33
+        },
+        "van_der_Waals_radius": 2.04
+    },
+
+    "At": {
+        "atomic_number": 85,
+        "atomic_radius": {
+            "empirical": null,
+            "calculated": 1.27
+        },
+        "covalent_radius": {
+            "2008 values": 1.50,
+            "molecular_bond": [null, 1.47, 1.38, 1.38],
+            "empirical": null
+        },
+        "van_der_Waals_radius": 2.88
+    }
+}

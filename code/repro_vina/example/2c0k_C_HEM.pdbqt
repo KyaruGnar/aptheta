@@ -1,0 +1,72 @@
+REMARK  8 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    1  A    between atoms: C2A_6  and  CAA_10 
+REMARK    2  A    between atoms: CAA_10  and  CBA_11 
+REMARK    3  A    between atoms: CBA_11  and  CGA_12 
+REMARK    4  A    between atoms: C3B_17  and  CAB_20 
+REMARK    5  A    between atoms: C3C_24  and  CAC_27 
+REMARK    6  A    between atoms: C3D_31  and  CAD_34 
+REMARK    7  A    between atoms: CAD_34  and  CBD_35 
+REMARK    8  A    between atoms: CBD_35  and  CGD_36 
+ROOT
+ATOM      1  CHA HEM d   1       1.731  16.358 -16.629  0.00  0.00     0.064 C 
+ATOM      2  CHB HEM d   1       2.107  11.553 -15.576  0.00  0.00     0.064 C 
+ATOM      3  CHC HEM d   1       1.297  12.401 -10.846  0.00  0.00     0.064 C 
+ATOM      4  CHD HEM d   1       0.596  17.138 -11.902  0.00  0.00     0.064 C 
+ATOM      5  C1A HEM d   1       1.846  14.978 -16.770  0.00  0.00     0.066 A 
+ATOM      6  C2A HEM d   1       1.901  14.239 -18.029  0.00  0.00    -0.021 A 
+ATOM      7  C3A HEM d   1       1.995  12.921 -17.741  0.00  0.00    -0.025 A 
+ATOM      8  C4A HEM d   1       2.019  12.767 -16.283  0.00  0.00     0.066 A 
+ATOM      9  CMA HEM d   1       2.090  11.780 -18.795  0.00  0.00     0.051 C 
+ATOM     10  C1B HEM d   1       1.928  11.348 -14.202  0.00  0.00     0.066 A 
+ATOM     11  C2B HEM d   1       2.060  10.081 -13.484  0.00  0.00    -0.021 A 
+ATOM     12  C3B HEM d   1       1.823  10.320 -12.169  0.00  0.00     0.000 A 
+ATOM     13  C4B HEM d   1       1.567  11.738 -12.024  0.00  0.00     0.070 A 
+ATOM     14  CMB HEM d   1       2.359   8.695 -14.138  0.00  0.00     0.052 C 
+ATOM     15  C1C HEM d   1       0.981  13.733 -10.739  0.00  0.00     0.066 A 
+ATOM     16  C2C HEM d   1       0.473  14.384  -9.551  0.00  0.00    -0.021 A 
+ATOM     17  C3C HEM d   1       0.266  15.694  -9.843  0.00  0.00     0.000 A 
+ATOM     18  C4C HEM d   1       0.639  15.911 -11.233  0.00  0.00     0.070 A 
+ATOM     19  CMC HEM d   1       0.191  13.687  -8.210  0.00  0.00     0.052 C 
+ATOM     20  C1D HEM d   1       0.762  17.378 -13.265  0.00  0.00     0.066 A 
+ATOM     21  C2D HEM d   1       0.442  18.611 -13.960  0.00  0.00    -0.025 A 
+ATOM     22  C3D HEM d   1       0.812  18.379 -15.416  0.00  0.00    -0.021 A 
+ATOM     23  C4D HEM d   1       1.302  17.013 -15.491  0.00  0.00     0.066 A 
+ATOM     24  CMD HEM d   1      -0.139  19.915 -13.344  0.00  0.00     0.051 C 
+ATOM     25  NA  HEM d   1       1.931  14.046 -15.727  0.00  0.00    -0.248 N 
+ATOM     26  NB  HEM d   1       1.629  12.321 -13.278  0.00  0.00    -0.248 N 
+ATOM     27  NC  HEM d   1       1.073  14.692 -11.750  0.00  0.00    -0.248 N 
+ATOM     28  ND  HEM d   1       1.261  16.458 -14.201  0.00  0.00    -0.248 N 
+ATOM     29 FE   HEM d   1       1.411  14.437 -13.713  0.00  0.00     0.000 Fe
+ENDROOT
+BRANCH   6  30
+ATOM     30  CAA HEM d   1       1.786  14.835 -19.454  0.00  0.00     0.052 C 
+BRANCH  30  31
+ATOM     31  CBA HEM d   1       3.025  15.615 -19.871  0.00  0.00     0.118 C 
+BRANCH  31  32
+ATOM     32  CGA HEM d   1       2.839  15.996 -21.335  0.00  0.00     0.172 C 
+ATOM     33  O1A HEM d   1       3.880  16.136 -22.052  0.00  0.00    -0.648 OA
+ATOM     34  O2A HEM d   1       1.635  16.126 -21.794  0.00  0.00    -0.648 OA
+ENDBRANCH  31  32
+ENDBRANCH  30  31
+ENDBRANCH   6  30
+BRANCH  22  35
+ATOM     35  CAD HEM d   1       0.626  19.373 -16.587  0.00  0.00     0.052 C 
+BRANCH  35  36
+ATOM     36  CBD HEM d   1      -0.793  19.196 -17.126  0.00  0.00     0.118 C 
+BRANCH  36  37
+ATOM     37  CGD HEM d   1      -0.945  19.837 -18.488  0.00  0.00     0.172 C 
+ATOM     38  O1D HEM d   1      -1.883  19.438 -19.229  0.00  0.00    -0.648 OA
+ATOM     39  O2D HEM d   1      -0.157  20.765 -18.818  0.00  0.00    -0.648 OA
+ENDBRANCH  36  37
+ENDBRANCH  35  36
+ENDBRANCH  22  35
+BRANCH  12  40
+ATOM     40  CAB HEM d   1       1.853   9.292 -10.995  0.00  0.00     0.004 C 
+ATOM     41  CBB HEM d   1       1.210   8.132 -11.080  0.00  0.00     0.012 C 
+ENDBRANCH  12  40
+BRANCH  17  42
+ATOM     42  CAC HEM d   1      -0.267  16.787  -8.876  0.00  0.00     0.004 C 
+ATOM     43  CBC HEM d   1      -1.534  16.753  -8.456  0.00  0.00     0.012 C 
+ENDBRANCH  17  42
+TORSDOF 8

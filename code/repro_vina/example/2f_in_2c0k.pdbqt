@@ -1,0 +1,40 @@
+BEGIN_RES ASN A   2
+REMARK  2 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    1  A    between atoms: CA   and  CB  
+REMARK    2  A    between atoms: CB   and  CG  
+REMARK       I    between atoms: CG   and  ND2 
+ROOT
+ATOM      1  CA  ASN A   2       8.058 -11.566  -6.180  1.00 47.92     0.205 C 
+ENDROOT
+BRANCH   1   2
+ATOM      2  CB  ASN A   2       6.732 -12.052  -5.638  1.00 48.00     0.081 C 
+BRANCH   2   3
+ATOM      3  CG  ASN A   2       6.831 -13.287  -5.003  1.00 45.23     0.237 C 
+ATOM      4  OD1 ASN A   2       6.195 -14.238  -5.405  1.00 48.13    -0.269 OA
+ATOM      5  ND2 ASN A   2       7.617 -13.343  -3.949  1.00 42.01    -0.367 N 
+ATOM      6 2HD2 ASN A   2       7.690 -14.248  -3.484  1.00  0.00     0.159 HD
+ATOM      7 1HD2 ASN A   2       8.152 -12.543  -3.611  1.00  0.00     0.159 HD
+ENDBRANCH   2   3
+ENDBRANCH   1   2
+END_RES ASN A   2
+BEGIN_RES MET A   1
+REMARK  3 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    3  A    between atoms: CA   and  CB  
+REMARK    4  A    between atoms: CB   and  CG  
+REMARK    5  A    between atoms: CG   and  SD  
+ROOT
+ATOM      8  CA  MET A   1       9.077  -7.905  -5.617  1.00 47.69     0.275 C 
+ENDROOT
+BRANCH   8   9
+ATOM      9  CB  MET A   1       8.869  -6.852  -6.731  1.00 47.38     0.053 C 
+BRANCH   9  10
+ATOM     10  CG  MET A   1       7.608  -7.091  -7.622  1.00 47.57     0.076 C 
+BRANCH  10  11
+ATOM     11  SD  MET A   1       5.992  -6.631  -6.851  1.00 51.09    -0.173 SA
+ATOM     12  CE  MET A   1       6.098  -4.849  -6.823  1.00 46.57     0.089 C 
+ENDBRANCH  10  11
+ENDBRANCH   9  10
+ENDBRANCH   8   9
+END_RES MET A   1

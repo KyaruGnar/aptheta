@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+
+# pdb data
+/data/
+
+# ml result
+/log/
+/log3/
+
+# feat result
+/features/
+
+# model weights
+/model/
+*.pt
+*.pth
+
+# test
+/test/
+
+# env
+/env_conda.yml

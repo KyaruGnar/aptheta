@@ -1,0 +1,11 @@
+{
+    "vina": {
+        "Gauss1": -0.035579,
+        "Gauss2": -0.005156,
+        "Repulsion": 0.840245,
+        "Hydrophobic": -0.035069,
+        "Hydrogen bonding": -0.587439,
+        "Glue": 50,
+        "Rot": 0.05846
+    }
+}
