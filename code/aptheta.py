@@ -197,12 +197,12 @@ def prefeat(dataset_file, data_path, feature_path):
 )
 @click.option(
     "--train_nums",
-    type=click.Path(exists=True),
+    type=int,
     help="训练集数量"
 )
 @click.option(
     "--test_nums",
-    type=click.Path(exists=True),
+    type=int,
     help="测试集数量(默认从倒数开始取)"
 )
 def iweight_bypre(name, prelogs, prefeats, train_nums, test_nums):
