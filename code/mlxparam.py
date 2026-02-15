@@ -3,6 +3,8 @@ mlxparam.py文件通过原始数据和机器学习生成模型的标签输入(�
 1.优化权重的机器学习模型
 2.损失函数
 3.优化权重训练器
+input: 原始蛋白质和小分子数据
+output: 含对接更优权重的log信息
 
 Last update: 2026-02-15 by Junlin_409
 version: 1.2.0 更新weights

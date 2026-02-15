@@ -407,7 +407,7 @@ class DataPipeline:
 
     # 全流程
     def run(self, pdb_ids: list[str] | None = None, except_ids: list[str] | None = None,
-            freshness: int = 90, atoms_constraint: int = 5000):
+            freshness: int = 900, atoms_constraint: int = 10000):
         """
         EX1.数据存储原则(默认):\n
         (1)根目录: DATA_PATH; 子目录: DATA_PATH/{pdb_id};\n
@@ -416,6 +416,8 @@ class DataPipeline:
         if pdb_ids is None:
             pdb_ids = self.get_pdb_ids(freshness)
             random.shuffle(pdb_ids)
+        else:
+            self.dataset_size = len(pdb_ids)
         count = 0
         for pdb_id in pdb_ids:
             pdb_id = pdb_id.lower()

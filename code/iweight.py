@@ -2,6 +2,9 @@
 iweights.py建立了一个模型:
 input: mlxparam.py产生的log文件信息(含蛋白质pdb文件, 小分子, 指标变化, 权重变化)
 output: 权重变化预测矩阵
+
+Last update: 2026-02-15 by Junlin_409
+version: 1.0.0 标记
 """
 
 
@@ -117,7 +120,6 @@ class IWeightTrainer:
         self.history = {
             'train_loss': [], 'val_loss': [],
             'train_rmse': [], 'val_rmse': [],
-            'train_r2': [], 'val_r2': []
         }
 
     def setup_device(self, device: str) -> torch.device:
@@ -162,9 +164,8 @@ class IWeightTrainer:
         # 指标计算
         avg_loss = total_loss / max(len(train_loader), 1)
         rmse = np.sqrt(mean_squared_error(all_targets, all_preds))
-        r2 = r2_score(all_targets, all_preds)
         # 返回
-        return avg_loss, rmse, r2
+        return avg_loss, rmse
 
     def validate(self, val_loader: DataLoader, loss_fn: nn.Module):
         # 初始化
@@ -190,9 +191,8 @@ class IWeightTrainer:
         # 指标计算
         avg_loss = total_loss / max(len(val_loader), 1)
         rmse = np.sqrt(mean_squared_error(all_targets, all_preds))
-        r2 = r2_score(all_targets, all_preds)
         # 返回
-        return avg_loss, rmse, r2
+        return avg_loss, rmse
 
     def train(self, train_loader: DataLoader, val_loader: DataLoader,
               epochs: int = 100, patience: int = 20, loss_fn: nn.Module = None):
@@ -208,9 +208,9 @@ class IWeightTrainer:
         # 每epoch训练
         for epoch in range(epochs):
             # 训练
-            train_loss, train_rmse, train_r2 = self.train_epoch(train_loader, loss_fn)
+            train_loss, train_rmse = self.train_epoch(train_loader, loss_fn)
             # 验证
-            val_loss, val_rmse, val_r2 = self.validate(val_loader, loss_fn)
+            val_loss, val_rmse = self.validate(val_loader, loss_fn)
             # 更新学习率
             self.scheduler.step(val_loss)
             current_lr = self.optimizer.param_groups[0]['lr']
@@ -219,11 +219,8 @@ class IWeightTrainer:
             self.history['val_loss'].append(val_loss)
             self.history['train_rmse'].append(train_rmse)
             self.history['val_rmse'].append(val_rmse)
-            self.history['train_r2'].append(train_r2)
-            self.history['val_r2'].append(val_r2)
             # 打印进度
-            print(f"{epoch+1:>4}/{epochs} {train_loss:>10.6f} {val_loss:>10.6f} "
-                  f"{train_r2:>9.4f} {val_r2:>9.4f} {current_lr:>9.2e}")
+            print(f"{epoch+1:>4}/{epochs} {train_loss:>10.6f} {val_loss:>10.6f} {current_lr:>9.2e}")
             # 早停检查
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
@@ -295,7 +292,7 @@ def workflow(logfile: str, seed: int = SEED):
     set_seed(seed)
 
     # 1.创建初始数据集
-    raw_dataset = parse_logfile(logfile)
+    raw_dataset = parse_logfile(logfile, "./data/self-built")
     print(f"数据集大小: {len(raw_dataset)}")
     dataset = ProteinDataset(raw_dataset)
     dataset.generate(raw_dataset)
@@ -317,23 +314,23 @@ def workflow(logfile: str, seed: int = SEED):
     trainer = IWeightTrainer()
     trainer.setup_model()
 
-    # # 5. 开始训练
-    # trainer.train(
-    #     train_loader=train_loader,
-    #     val_loader=val_loader,
-    #     epochs=100,
-    #     patience=20,
-    #     loss_fn=nn.MSELoss()
-    # )
+    # 5. 开始训练
+    trainer.train(
+        train_loader=train_loader,
+        val_loader=val_loader,
+        epochs=300,
+        patience=45,
+        loss_fn=nn.MSELoss()
+    )
 
-    # # 6. 绘制训练历史
-    # trainer.plot_training_history()
+    # 6. 绘制训练历史
+    trainer.plot_training_history()
 
     # 7.加载最佳模型并进行预测
     checkpoint = torch.load('best_model.pth')
     trainer.model.load_state_dict(checkpoint['model_state_dict'])
     predictions = trainer.predict(test_loader)
-    print(f"预测结果: {predictions}")
+    # print(f"预测结果: {predictions}")
 
     dp = DataPipeline()
     for i, di in enumerate(test_dataset.indices):
@@ -348,11 +345,6 @@ def workflow(logfile: str, seed: int = SEED):
             "Glue": 50,
             "Rot": 0.05846 * (1+predictions[i][5])
         }
-        # for ii, w in enumerate(predictions[i]):
-        #     if ii < 5:
-        #         weights[ii] = weights[ii] * (1+w)
-        #     else:
-        #         weights[ii+1] = weights[ii+1] * (1+w)
         ofp = f"{sp}/out_weights.pdbqt"
         vina(ifs, b, ofp, weights)
         rmsd = rmsd_eval(ifs, ofp)
@@ -443,7 +435,7 @@ def workflow_bypre(name: str, pdb_ids: list[str], test_ids: list[str], log_filep
         res = f"pdb_id: {rd[0]}, xb_rmsd: {rd[4]}, xa_rmsd: {rd[5]}, iw_rmsd: {rmsd[0]}.\n"
         print(res)
         os.remove(ofp)
-        fileio.write_file_text(f"pred_res_{name}.txt", res, append=True)
+        fileio.write_file_text(f"{name}.txt", res, append=True)
 
 
 if __name__ == "__main__":

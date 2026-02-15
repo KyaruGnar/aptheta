@@ -41,6 +41,9 @@ def redirect_stdout_stderr(log_file):
     if sys.platform == "linux" and os.path.exists("/dev/shm"):
         os.makedirs("/dev/shm/aptheta/log", exist_ok=True)
         log_file = (f"/dev/shm/aptheta/log/{os.path.split(log_file)[1]}")
+    else:
+        os.makedirs(f"{os.path.dirname(log_file)}/log_run", exist_ok=True)
+        log_file = f"{os.path.dirname(log_file)}/log_run/{os.path.basename(log_file)}"
     log_fd = os.open(log_file, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o644)
     os.dup2(log_fd, 1)  # stdout
     os.dup2(log_fd, 2)  # stderr
@@ -49,7 +52,7 @@ def redirect_stdout_stderr(log_file):
 # 样本处理
 def process(sample):
     try:
-        redirect_stdout_stderr(f"{sample[-1]}_run")
+        redirect_stdout_stderr(sample[-1])
         mpt = MlXParamTrainer()
         mpt.setup_model(weight_decay=0.0)
         mpt.record(*sample)
@@ -123,4 +126,4 @@ if __name__ == "__main__":
     print(f"任务总数: {len(samples_with_log)}, 成功任务数: {result[0]}. 失败样本将保存至文件.")
     fileio.write_file_lines(os.path.normpath(f"{args.log_path}/failure_ids.txt"), result[1])
     if sys.platform == "linux" and os.path.exists("/dev/shm"):
-        shutil.move("/dev/shm/aptheta/log", f"{args.log_path}_run")
+        shutil.move("/dev/shm/aptheta/log", f"{args.log_path}_run")   
