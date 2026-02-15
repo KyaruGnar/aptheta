@@ -374,7 +374,7 @@ def workflow_bypre(name: str, pdb_ids: list[str], test_ids: list[str], log_filep
         if plog[-1] == "":
             plog.pop()
         fileio.write_file_lines(logfile, plog, True)
-    raw_dataset = parse_logfile2(logfile, "./data")
+    raw_dataset = parse_logfile2(logfile, "./data/PDBbind_v2020_PL")
     print(f"数据集大小: {len(raw_dataset)}")
     dataset = ProteinDataset(raw_dataset)
     dataset.pre_generate(pdb_ids, feature_filepath)
@@ -386,7 +386,7 @@ def workflow_bypre(name: str, pdb_ids: list[str], test_ids: list[str], log_filep
             if plog[-1] == "":
                 plog.pop()
             fileio.write_file_lines(test_logfile, plog, True)
-    test_samples = parse_logfile2(test_logfile, "./data")
+    test_samples = parse_logfile2(test_logfile, "./data/PDBbind_v2020_PL")
     test_dataset = ProteinDataset(test_samples)
     test_dataset.pre_generate(test_ids, feature_filepath)
 

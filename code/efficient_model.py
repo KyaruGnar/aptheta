@@ -1,6 +1,9 @@
 """
 梳理：
-相较于死板且极大开销的inter_energy_between(双重循环)，vina_with_mol使用numpy库对
+相较于死板且极大开销的inter_energy_between(双重循环), vina_with_mol使用numpy库进行优化
+
+Last update: 2026-02-15 by Junlin_409
+version: 1.0.0
 """
 
 import numpy as np

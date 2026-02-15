@@ -1,6 +1,17 @@
+"""
+featurer.py文件通过原始数据和预训练模型生成模型的特征输入, 是aptheta模型的特征工程:
+1.蛋白质结构特征(由ProteinMPNN模型生成)
+2.蛋白质序列特征(由esm2模型生成)
+3.小分子SMILES特征(由ChemBERTa模型生成)
+
+Last update: 2026-02-08 by Junlin_409
+version: 1.1.0 Linux系统上加速尝试
+"""
+
 import argparse
 import os
 import random
+import shutil
 import sys
 import time
 from tqdm import tqdm
@@ -25,8 +36,11 @@ parser.add_argument("--log_path", type=str)
 parser.add_argument("--test", action="store_true")
 args = parser.parse_args()
 
-
+# 输出重定向
 def redirect_stdout_stderr(log_file):
+    if sys.platform == "linux" and os.path.exists("/dev/shm"):
+        os.makedirs("/dev/shm/aptheta/log", exist_ok=True)
+        log_file = (f"/dev/shm/aptheta/log/{os.path.split(log_file)[1]}")
     log_fd = os.open(log_file, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o644)
     os.dup2(log_fd, 1)  # stdout
     os.dup2(log_fd, 2)  # stderr
@@ -108,3 +122,5 @@ if __name__ == "__main__":
     result = run(samples_with_log)
     print(f"任务总数: {len(samples_with_log)}, 成功任务数: {result[0]}. 失败样本将保存至文件.")
     fileio.write_file_lines(os.path.normpath(f"{args.log_path}/failure_ids.txt"), result[1])
+    if sys.platform == "linux" and os.path.exists("/dev/shm"):
+        shutil.move("/dev/shm/aptheta/log", f"{args.log_path}_run")

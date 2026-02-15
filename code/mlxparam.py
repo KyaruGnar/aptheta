@@ -3,11 +3,15 @@ mlxparam.py文件通过原始数据和机器学习生成模型的标签输入(�
 1.优化权重的机器学习模型
 2.损失函数
 3.优化权重训练器
+
+Last update: 2026-02-15 by Junlin_409
+version: 1.2.0 更新weights
 """
 
 # 引入区
 import copy
 import os
+import shutil
 import sys
 import torch
 from torch import nn, optim
@@ -123,21 +127,23 @@ class MlXParamTrainer:
 
     # 外循环参数学习
     def outer_train(self, sample_path: str, input_files: dict, box: dict,
-                    print_mode: bool = False, speed_up: bool = False) -> tuple[nn.ParameterDict, list[float], int]:
+                    print_mode: bool = False) -> tuple[nn.ParameterDict, list[float], int]:
         """
         EX2.数据存储原则(默认):\n
         (3)对接文件目录: DATA_PATH/{pdb_id}/mlxparam;
         """
-        if speed_up:
-            if sys.platform != "linux" or os.path.exists("/dev/shm"):
-                speed_up = False
-            else:
-                os.makedirs("/dev/shm/aptheta", exist_ok=True)
+        if sys.platform != "linux" or not os.path.exists("/dev/shm"):
+            speed_up = False
+        else:
+            speed_up = True
+            os.makedirs("/dev/shm/aptheta", exist_ok=True)
         if self.model is None:
             raise RuntimeError("Model is not initialized.")
         self.model.initialize_weights()
         self.model.initialize_model(input_files["receptor"], input_files["ligands"])
         output_file = f"{sample_path}/mlxparam/out0.pdbqt"
+        if speed_up:
+            output_file = f"/dev/shm/aptheta/mlxparam/{os.path.split(sample_path)[1]}/out0.pdbqt"
         vina(input_files, box, output_file, {k: v.detach().cpu().item() for k, v in self.model.weights.items()})
         best_index = rmsd_eval(input_files, output_file)
         if len(best_index) == 0:
@@ -149,6 +155,8 @@ class MlXParamTrainer:
                 print(f"Outer epoch {epoch+1:03}, based on '{output_file}'.")
             self.inner_train(output_file, print_mode)
             new_output_file = f"{sample_path}/mlxparam/out{epoch+1}.pdbqt"
+            if speed_up:
+                new_output_file = f"/dev/shm/aptheta/mlxparam/{os.path.split(sample_path)[1]}/out{epoch+1}.pdbqt"
             vina(input_files, box, new_output_file, {k: v.detach().cpu().item() for k, v in self.model.weights.items()})
             new_index = rmsd_eval(input_files, new_output_file)
             if len(new_index) == 0:
@@ -173,6 +181,8 @@ class MlXParamTrainer:
                     break
                 if print_mode:
                     print(f"Retain output of outer epoch {best_epoch+1:03}.")
+            if speed_up:
+                shutil.move(f"/dev/shm/aptheta/mlxparam/{os.path.split(sample_path)[1]}", f"{sample_path}/mlxparam")
         return best_weights, best_index, best_epoch
 
     def record(self, sample_path: str, input_files: dict, box: dict, filepath: str, print_mode: bool = False):

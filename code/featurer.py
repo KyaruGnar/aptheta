@@ -3,9 +3,9 @@ featurer.py文件通过原始数据和预训练模型生成模型的特征输入
 1.蛋白质结构特征(由ProteinMPNN模型生成)
 2.蛋白质序列特征(由esm2模型生成)
 3.小分子SMILES特征(由ChemBERTa模型生成)
-更新日志:
-# The newest update time: 202602082313
-# The update device: 409
+
+Last update: 2026-02-08 by Junlin_409
+version: 1.1.0 更新了预特征
 """
 
 # 引入区

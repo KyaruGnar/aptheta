@@ -1,6 +1,9 @@
 """
-dock_score.py文件为临时文件，合并了原先的energy.py和main_model.py，并删除了预计算功能
+dock_score.py文件为临时文件, 合并了原先的energy.py和main_model.py,并删除了预计算功能
 原实现功能完整版需使用repro_vina包
+
+Last update: 2026-02-15 by Junlin_409
+version: 1.0.0
 """
 
 # 引入区
@@ -12,7 +15,7 @@ from repro_vina.simulation import GeometricConstraint, Atom, AtomPair, RigidMole
 from efficient_model import vina_with_mol, vina_with_mols
 
 """
-原energy.py文件部分，旨在归纳分子对接时的能量计算:
+原energy.py文件部分, 旨在归纳分子对接时的能量计算:
 (1)势能类: 实现了相关势能项的计算
 (2)计算器: 实现原子对(集), 分子内, 分子间的计算, 并设置相关势能项来完成模型的能量计算
 (3)预计算: 根据原子类型实现计算单元并进行预计算, 后续根据输入获取计算结果

@@ -1,13 +1,16 @@
 """
 data_pipeline.py文件获取/转换/解析/流式构造模型的数据集, 是aptheta模型的数据工程:
 1.数据获取功能: 从RCSB数据库下载蛋白质文件和对应配体文件
-2.
-3.
+2.数据转换功能: 将数据转换为所需格式
+3.数据解析功能: 从PDB文件中提取出配体信息, 从文件组中提取出对接盒子, 从结果文件中提取出原始数据组
 4.数据集构建流程功能: 
 EX.(自建)数据存储原则:
 (1)根目录: DATA_PATH; 子目录: DATA_PATH/{pdb_id};
 (2)蛋白质(所有格式)目录: DATA_PATH/{pdb_id}/protein; 配体(所有格式)目录: DATA_PATH/{pdb_id}/ligands;
 (3)对接文件目录: DATA_PATH/{pdb_id}/mlxparam;
+
+Last update: 2026-02-15 by Junlin_409
+version: 1.0.0
 """
 
 # 引入区
@@ -257,8 +260,8 @@ def parse_box_from_pdbqt(filepaths: list[str], allowance: float = 6.0) -> dict[s
     }
     return box
 
-# 3.解析log文件(以当前log格式为准, 16行一个单位, 后续需要同步更改!!!) @Warn
-def parse_logfile(log_filename: str) -> list:
+# 3.解析自建数据集的log文件(以当前log格式为准, 16行一个单位, 后续需要同步更改!!!) @Warn
+def parse_logfile(log_filename: str, data_path: str) -> list:
     mlxparm_log = fileio.read_file_lines(log_filename)
     raw_dataset = []
     # 临时过滤
@@ -270,10 +273,10 @@ def parse_logfile(log_filename: str) -> list:
         # 临时过滤
         if pdb_id not in ppids:
             continue
-        receptor = f"{DATA_PATH}/{pdb_id}/protein/{pdb_id}_atoms.pdb"
+        receptor = f"{data_path}/{pdb_id}/protein/{pdb_id}_atoms.pdb"
         ligand = ast.literal_eval(mlxparm_log[base_idx+3])[0].split("/")[-1].split(".")[0]
         site_chain, site_num = ligand.split("_")[1], int(ligand.split("_")[2])
-        ligand = f"{DATA_PATH}/{pdb_id}/ligands/{ligand}_adapted.sdf"
+        ligand = f"{data_path}/{pdb_id}/ligands/{ligand}_adapted.sdf"
         # 参数修正带来的rmsd指标影响
         xb_rmsds = ast.literal_eval(mlxparm_log[base_idx+5])
         xa_rmsds = ast.literal_eval(mlxparm_log[base_idx+7])
@@ -295,7 +298,7 @@ def parse_logfile(log_filename: str) -> list:
             raw_dataset.append([pdb_id, receptor, ligand, site_chain, xb_rmsd, xa_rmsd, weights, rmsds])
     return raw_dataset
 
-# 3.1.解析log文件(以当前log格式为准, 16行一个单位, 后续需要同步更改!!!) @Warn
+# 3.1.解析PDBBind的log文件(以当前log格式为准, 16行一个单位, 后续需要同步更改!!!) @Warn
 def parse_logfile2(log_filename: str, data_path: str) -> list:
     mlxparm_log = fileio.read_file_lines(log_filename)
     raw_dataset = []
@@ -303,9 +306,9 @@ def parse_logfile2(log_filename: str, data_path: str) -> list:
         base_idx = log_idx * 16
         # 信息提取
         pdb_id = mlxparm_log[base_idx+1].split("/")[-2]
-        receptor = f"{data_path}/PDBbind_v2020_PL/{pdb_id}/{pdb_id}_protein_atoms.pdb"
+        receptor = f"{data_path}/{pdb_id}/{pdb_id}_protein_atoms.pdb"
         ligand = ast.literal_eval(mlxparm_log[base_idx+3])[0].split("/")[-1].split(".")[0]
-        ligand = f"{data_path}/PDBbind_v2020_PL/{pdb_id}/ligands/{ligand}_adapted.sdf"
+        ligand = f"{data_path}/{pdb_id}/ligands/{ligand}_adapted.sdf"
         # 参数修正带来的rmsd指标影响
         xb_rmsds = ast.literal_eval(mlxparm_log[base_idx+5])
         xa_rmsds = ast.literal_eval(mlxparm_log[base_idx+7])

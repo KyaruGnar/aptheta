@@ -1,5 +1,8 @@
 """
 parameter.py文件归纳了项目中的参数
+
+Last update: 2026-02-15 by Junlin_409
+version: 1.0.0 标记
 """
 
 # 引入区

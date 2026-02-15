@@ -3,12 +3,16 @@ extcall.py归纳了项目使用过程中所用到的外部程序/代码调用:
 1.AutoDock区: 调用特定代码文件将蛋白质/配体文件转换为pdbqt格式
 2.Vina区: 调用Vina程序生成给定受体和配体的对接结果
 3.DockRMSD_YF区: 调用师兄实现的DockRMSD代码文件生成权重优化的评估指标
+
+Last update: 2026-02-15 by Junlin_409
+version: 1.0.1 适配linux
 """
 
 
 # 导入区
 import os
 import subprocess
+import sys
 from openbabel import openbabel # type: ignore
 from parameter import EXTERNAL_PATH, PYTHON2_PATH, SEED
 from aptheta_utils.fileio import read_file_text
@@ -79,7 +83,11 @@ def vina(input_files: dict, box: dict, output_file: str, weights: dict, cmd_outp
     weights: 字典, 包含Vina对接参数\n
     cmd_output: 布尔值, 为真则在终端输出
     """
-    vina_path = os.path.normpath(f"{EXTERNAL_PATH}/Vina/vina.exe")
+    if sys.platform.startswith("win"):
+        vina_bin = "vina.exe"
+    else:
+        vina_bin = "vina_1.2.5_linux_x86_64"
+    vina_path = os.path.normpath(f"{EXTERNAL_PATH}/Vina/{vina_bin}")
     # inputs
     inputs = [
         "--receptor", input_files["receptor"],
@@ -110,6 +118,7 @@ def vina(input_files: dict, box: dict, output_file: str, weights: dict, cmd_outp
     # misc
     misc = [
         "--seed", str(SEED),
+        "--cpu", "1",
         "--num_modes", "9",
         "--verbosity", "1"
     ]
