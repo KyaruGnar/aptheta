@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 test文件为各自测试留档
 """
@@ -14,9 +16,82 @@ import os
 from parameter import set_seed
 from iweight import workflow_bypre
 from repro_vina import workflow_with_DockingModel
-workflow_with_DockingModel(example=0)
-workflow_with_DockingModel(example=1)
-workflow_with_DockingModel(example=2)
+
+
+
+import sys
+import yaml
+import re
+from pathlib import Path
+
+# import chardet
+
+# # 检测文件编码
+# with open("./env/env.yml", 'rb') as f:
+#     raw_data = f.read()
+#     result = chardet.detect(raw_data)
+#     encoding = result['encoding']
+#     print(f"检测到编码: {encoding}")
+
+def clean_conda_dep(dep: str) -> str:
+    """
+    去除 build 编号
+    numpy=1.26.4=py310h5f9d8c6_0
+    → numpy=1.26.4
+    """
+    parts = dep.split("=")
+    if len(parts) >= 2:
+        return "=".join(parts[:2])
+    return dep
+
+
+def split_env_file(env_path: Path):
+    with open(env_path, "r", encoding="utf-16") as f:
+        env_data = yaml.safe_load(f)
+
+    conda_deps = []
+    pip_deps = []
+
+    for dep in env_data.get("dependencies", []):
+        if isinstance(dep, str):
+            if dep != "pip":
+                conda_deps.append(clean_conda_dep(dep))
+            else:
+                conda_deps.append("pip")
+
+        elif isinstance(dep, dict) and "pip" in dep:
+            for p in dep["pip"]:
+                pip_deps.append(p.strip())
+
+    env_data.pop("prefix", None)
+
+    new_env_data = {
+        "name": env_data.get("name", "env"),
+        "channels": env_data.get("channels", []),
+        "dependencies": conda_deps,
+    }
+
+    conda_output = env_path.with_name(env_path.stem + "_conda.yml")
+    pip_output = env_path.with_name("requirements.txt")
+
+    with open(conda_output, "w") as f:
+        yaml.dump(new_env_data, f, sort_keys=False)
+
+    if pip_deps:
+        with open(pip_output, "w") as f:
+            f.write("\n".join(pip_deps))
+
+    # 生成安装脚本
+
+    print(f"✔ Generated: {conda_output}")
+    print(f"✔ Generated: {pip_output}")
+
+
+split_env_file(Path("./env/env.yml"))
+
+# workflow_with_DockingModel(example=0)
+# workflow_with_DockingModel(example=1)
+# workflow_with_DockingModel(example=2)
 # sample_path = "./data/1234"
 # print(os.path.split(sample_path))
 

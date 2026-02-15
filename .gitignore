@@ -19,6 +19,3 @@ __pycache__/
 
 # test
 /test/
-
-# env
-/env_conda.yml

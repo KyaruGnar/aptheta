@@ -2,7 +2,10 @@
 fileio.py文件提供了文件的输入输出功能:
 1.一般文件读取/编写操作
 2.JSON文件读取/编写操作
-3.递归删除文件操作 
+3.递归删除文件操作
+
+Last update: 2026-02-14 by Junlin_409
+version: 1.0.0
 """
 
 # 导入区
@@ -50,10 +53,10 @@ def write_json(filepath: str, data: dict) -> None:
 # 7.递归移除文件
 def remove_files(filepath: str) -> None:
     filepath = os.path.normpath(filepath)
+    if os.path.isfile(filepath):
+        os.remove(filepath)
+        return
     for filename in os.listdir(filepath):
         subfilepath = os.path.join(filepath, filename)
-        if os.path.isdir(subfilepath):
-            remove_files(subfilepath)
-        if os.path.isfile(subfilepath):
-            os.remove(subfilepath)
+        remove_files(subfilepath)
     os.rmdir(filepath)
