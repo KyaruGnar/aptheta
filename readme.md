@@ -1,5 +1,5 @@
 
-##项目代码结构：
+##项目代码结构：  
 
 aptheta/
 
@@ -99,22 +99,22 @@ aptheta/
 
 
 
-##命令行调用
-通过aptheta.py提供了部分命令行调用的功能。
-准备：虚拟环境安装完成并激活，在program根目录下执行：
-python ./code/aptheta.py 子命令 参数
-以下为示例，无法直接调用，需要根据需求自行调整，具体可使用--help查看子命令或者子命令下的参数
-1.给定pdb_ids的自建数据集构建
-python ./code/aptheta.py build_self --dataset dataset.txt --py2 D:/soft/MGLTools-1.5.6/python
-2.PDBBind数据集构建
-python ./code/aptheta.py build_pdbbind --dataset ./data/PDBbind_v2020_PL --py2 D:/soft/MGLTools-1.5.6/python
-3.自建数据集的自适应权重产生
-python ./code/aptheta.py mlxparam --dataset_file dataset.txt --data_path ./data/self_built ----logfile log_s.txt
-4.自建数据集的预测权重训练
-python ./code/aptheta.py iweight --logfile log_s.txt
-5.PDBBind数据集的预特征产生
-python ./code/aptheta.py prefeat --dataset_file dataset.txt --data_path ./data/PDBbind_v2020_PL --feature_path ./features
-6.PDBBind数据集的预测权重训练
-python ./code/aptheta.py iweight_bypre --name "1234" --prelogs ./log_p --prefeats ./features
-7.PDBBind数据集的自适应权重产生*(该部分独立在parallel.py中)
-python ./code/parallel.py --dataset_file filter_chain1.txt --data_path ./data/PDBbind_v2020_PL --log_path log_p
+##命令行调用  
+通过aptheta.py提供了部分命令行调用的功能。  
+准备：虚拟环境安装完成并激活，在program根目录下执行：  
+python ./code/aptheta.py 子命令 参数  
+以下为示例，无法直接调用，需要根据需求自行调整，具体可使用--help查看子命令或者子命令下的参数  
+1.给定pdb_ids的自建数据集构建  
+python ./code/aptheta.py build_self --dataset dataset.txt --py2 D:/soft/MGLTools-1.5.6/python  
+2.PDBBind数据集构建  
+python ./code/aptheta.py build_pdbbind --dataset ./data/PDBbind_v2020_PL --py2 D:/soft/MGLTools-1.5.6/python  
+3.自建数据集的自适应权重产生  
+python ./code/aptheta.py mlxparam --dataset_file dataset.txt --data_path ./data/self_built ----logfile log_s.txt  
+4.自建数据集的预测权重训练  
+python ./code/aptheta.py iweight --logfile log_s.txt  
+5.PDBBind数据集的预特征产生  
+python ./code/aptheta.py prefeat --dataset_file dataset.txt --data_path ./data/PDBbind_v2020_PL --feature_path ./features  
+6.PDBBind数据集的预测权重训练  
+python ./code/aptheta.py iweight_bypre --name "1234" --prelogs ./log_p --prefeats ./features  
+7.PDBBind数据集的自适应权重产生*(该部分独立在parallel.py中)  
+python ./code/parallel.py --dataset_file filter_chain1.txt --data_path ./data/PDBbind_v2020_PL --log_path log_p  
