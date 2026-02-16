@@ -36,6 +36,7 @@ parser.add_argument("--log_path", type=str)
 parser.add_argument("--test", action="store_true")
 args = parser.parse_args()
 
+
 # 输出重定向
 def redirect_stdout_stderr(log_file):
     if sys.platform == "linux" and os.path.exists("/dev/shm"):

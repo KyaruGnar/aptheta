@@ -8,7 +8,8 @@ from matplotlib.patches import Patch
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-from data_pipeline import parse_logfile
+from data_pipeline import parse_logfile, parse_logfile2
+from aptheta_utils import fileio
 from parameter import SEED
 from torch.utils.data import random_split
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置字体为黑体
@@ -102,40 +103,133 @@ def show_data_distribution_ex(data):
     data = np.array([(d[1]-d[2])/d[1]*100 for d in data])
 
     # 创建图形
-    plt.figure(figsize=(12, 8))
+    # plt.figure(figsize=(12, 8))
 
-    # 绘制直方图，每20为一组
-    plt.hist(data, 
-            bins=[0, 20, 40, 60, 80, 100],  # 定义分组边界
-            edgecolor='black', 
-            alpha=0.7, 
-            color='skyblue',
-            rwidth=0.9)
+    bins = [-1e+7, 0, 5, 20, 35, 50, 65, 80, 95, 100]
+
+    # plt.hist(data,
+    #          bins=bins,
+    #          edgecolor='black', 
+    #          alpha=0.7, 
+    #          color='skyblue',
+    #          rwidth=0.9)
+
+    # 设置刻度在每个区间的中心
+    bin_centers = [(bins[i] + bins[i+1]) / 2 for i in range(len(bins)-1)]
+    labels = [
+        "<0",
+        "0-5",
+        "5-20",
+        "20-35",
+        "35-50",
+        "50-65",
+        "65-80",
+        "80-95",
+        "95-100"
+    ]
+
+    cat = np.digitize(data, bins)
+
+    # 统计
+    counts = [np.sum(cat == i) for i in range(1, len(bins))]
+    fig, ax = plt.subplots()
+
+    bars = ax.bar(labels, counts)
+
+    # 在柱子上标注数值
+    for bar in bars:
+        height = bar.get_height()
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,   # x 位置：柱子中间
+            height,                              # y 位置：柱顶
+            f'{int(height)}',                    # 显示的文本
+            ha='center',                         # 水平居中
+            va='bottom'                          # 文字在柱顶上方
+    )
+    # 画柱状图（等宽）
+    plt.xticks(rotation=45)
+
+    # plt.xticks(bin_centers, labels, rotation=45)
 
     # 设置图表标题和标签
-    plt.title('数据分布直方图 (每20为一组)', fontsize=16, fontweight='bold', pad=20)
-    plt.xlabel('数值范围', fontsize=12)
+    plt.title('数据分布直方图' , fontsize=16, fontweight='bold', pad=20)
+    plt.xlabel('指标变化范围（百分制）', fontsize=12)
     plt.ylabel('频数', fontsize=12)
 
-    # 设置x轴刻度标签
-    plt.xticks([10, 30, 50, 70, 90], 
-            ['0-20', '20-40', '40-60', '60-80', '80-100'])
-
     # 添加网格线
-    plt.grid(axis='y', alpha=0.3, linestyle='--')
+    # plt.grid(axis='y', alpha=0.3, linestyle='--')
 
-    # 在每个柱子上方显示频数
-    counts, bins, patches = plt.hist(data, bins=[0, 20, 40, 60, 80, 100])
-    for i, (count, patch) in enumerate(zip(counts, patches)):
-        plt.text(patch.get_x() + patch.get_width()/2, count + 1, 
-                f'{int(count)}', 
-                ha='center', va='bottom', fontweight='bold')
+    # # 在每个柱子上方显示频数
+    # counts, bins, patches = plt.hist(data, bins=bins)
+    # for i, (count, patch) in enumerate(zip(counts, patches)):
+    #     plt.text(patch.get_x() + patch.get_width()/2, count + 1, 
+    #             f'{int(count)}', 
+    #             ha='center', va='bottom', fontweight='bold')
 
     # 添加统计信息
-    plt.text(0.02, 0.98, f'总数据量: {len(data)}\n平均值: {np.mean(data):.1f}\n标准差: {np.std(data):.1f}', 
+    plt.text(0.8, 0.98, f'总数据量: {len(data)}\n平均值: {np.mean(data):.3f}\n标准差: {np.std(data):.3f}', 
             transform=plt.gca().transAxes, 
             verticalalignment='top',
             bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+
+    plt.tight_layout()
+    plt.show()
+
+# 1.ex.数据分布展示直方图
+# 输入: [(xb, xa, iw), ...]
+def show_data_distribution_ex2(data):
+    print("三数值直方图")
+    data = np.array([100*(d[0]-d[2])/(d[0]-d[1]+1e-6) for d in data])
+
+    bins = [-1e+9, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 1e+9]
+
+    # 设置刻度在每个区间的中心
+    labels = [
+        "<0",
+        "0-10",
+        "10-20",
+        "20-30",
+        "30-40",
+        "40-50",
+        "50-60",
+        "60-70",
+        "70-80",
+        "80-90",
+        "90-100",
+        ">100"
+    ]
+
+    cat = np.digitize(data, bins)
+
+    # 统计
+    counts = [np.sum(cat == i) for i in range(1, len(bins))]
+    fig, ax = plt.subplots()
+
+    bars = ax.bar(labels, counts)
+
+    # 在柱子上标注数值
+    for bar in bars:
+        height = bar.get_height()
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,   # x 位置：柱子中间
+            height,                              # y 位置：柱顶
+            f'{int(height)}',                    # 显示的文本
+            ha='center',                         # 水平居中
+            va='bottom'                          # 文字在柱顶上方
+    )
+    # 画柱状图（等宽）
+    plt.xticks(rotation=45)
+
+    # 设置图表标题和标签
+    plt.title('数据分布直方图' , fontsize=16, fontweight='bold', pad=20)
+    plt.xlabel('优化情况比较（百分制）', fontsize=12)
+    plt.ylabel('频数', fontsize=12)
+
+        # 添加统计信息
+    # plt.text(0.8, 0.98, f'总数据量: {len(data)}\n平均值: {np.mean(data):.3f}\n标准差: {np.std(data):.3f}', 
+    #         transform=plt.gca().transAxes, 
+    #         verticalalignment='top',
+    #         bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
 
     plt.tight_layout()
     plt.show()
@@ -176,7 +270,7 @@ def workflow(logfile: str):
     set_seed()
 
     # 1.创建初始数据集
-    raw_dataset = parse_logfile(logfile)
+    raw_dataset = parse_logfile(logfile, "./data/self-built")
     visual_dataset = [[rd[0], rd[4], rd[5]] for rd in raw_dataset]
     print(f"数据集大小: {len(visual_dataset)}")
     dataset_indices = np.array(range(len(visual_dataset)))
@@ -196,8 +290,45 @@ def workflow(logfile: str):
     show_data_distribution(visual_dataset, dataset_indices)
     show_data_distribution_ex(visual_dataset)
 
+# ex.1数据分布直方图
+def workflow2(logfile: str):
+    # 0.初始准备
+    set_seed()
+
+    # 1.创建初始数据集
+    raw_dataset = parse_logfile2(logfile, "./data/PDBbind_v2020_PL")
+    visual_dataset = [[rd[0], rd[4], rd[5]] for rd in raw_dataset]
+    print(f"数据集大小: {len(visual_dataset)}")
+    dataset_indices = np.array(range(len(visual_dataset)))
+
+    show_data_distribution_ex(visual_dataset)
+
+# ex.2数据分布直方图
+def workflow3(logfile: str):
+    # 0.初始准备
+    set_seed()
+
+    log = fileio.read_file_lines(logfile)
+    if log[-1] == "":
+        log.pop()
+    data = []
+    for l in log:
+        d = l.split(",")
+        xb = float(d[1].split(":")[1].strip())
+        xa = float(d[2].split(":")[1].strip())
+        iw = float(d[3].split(":")[1].strip()[:-1])
+        data.append([xb, xa, iw])
+
+    print(f"数据集大小: {len(data)}")
+    data1 = [[row[1], row[0], *row[2:]] for row in data]
+    show_data_distribution_ex(data1)
+    show_data_distribution_ex2(data)
+
+
+
 if __name__ == "__main__":
-    workflow("log.txt")
+    workflow3("s5229l3pd256.txt")
+    # workflow("log.txt")
     # workflow("./log/20251023010518/result.txt")
     # show_pdbbind_chain("F:\\program\\test\\data")
     # show_pdbbind_chain("F:\\PDBbind\\2020\\PDBbind_v2020_PL")

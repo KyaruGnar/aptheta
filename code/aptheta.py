@@ -14,7 +14,7 @@ from data_pipeline import DataPipeline, PDBBindDataSet
 from mlxparam import MlXParamTrainer
 from iweight import workflow, workflow_bypre
 from featurer import FeatureCollector
-from parameter import set_seed
+from parameter import set_seed, PYTHON2_PATH
 
 # ==============================
 # 主入口（Group）
@@ -37,19 +37,27 @@ def cli(ctx):
 @click.option(
     "--dataset",
     type=click.Path(exists=True),
-    help="将要构建的pdb_ids数据集的文件路径(一行一个pdb_id), 否则根据设定大小随机构建"
+    help="将要构建的pdb_ids数据集文件的路径(一行一个pdb_id), 否则根据设定大小随机构建"
 )
 @click.option(
     "--data_size",
     type=int,
     help="设定随机构建时的数据集大小"
 )
-def build_self(dataset, data_size):
+@click.option(
+    "--py2",
+    required=True,
+    type=click.Path(exists=True),
+    help="pdb转pdbqt需要的adt的python2.exe路径"
+)
+def build_self(dataset, data_size, py2):
     """
     Prepare dataset from RCSB.
     """
     if not dataset and not data_size:
         raise click.UsageError("You must provide either --pdb_ids or --data_size.")
+    global PYTHON2_PATH
+    PYTHON2_PATH = py2
     if dataset:
         pdb_ids = fileio.read_file_lines(dataset)
         if pdb_ids[-1] == "":
@@ -68,12 +76,20 @@ def build_self(dataset, data_size):
     "--dataset",
     required=True,
     type=click.Path(exists=True),
-    help="将要构建的PDBBind数据集的文件路径"
+    help="将要构建的PDBBind数据集的文件夹路径"
 )
-def build_pdbbind(dataset):
+@click.option(
+    "--py2",
+    required=True,
+    type=click.Path(exists=True),
+    help="pdb转pdbqt需要的adt的python2.exe路径"
+)
+def build_pdbbind(dataset, py2):
     """
     Prepare dataset from PDBBind.
     """
+    global PYTHON2_PATH
+    PYTHON2_PATH = py2
     dp = PDBBindDataSet(dataset)
     dp.run()
 
@@ -97,7 +113,7 @@ def build_pdbbind(dataset):
     "--logfile",
     required=True,
     type=click.Path(exists=True),
-    help="优化权重信息存放文件路径"
+    help="优化权重信息存放文件的路径"
 )
 def mlxparam(dataset_file, data_path, logfile):
     """
@@ -111,7 +127,7 @@ def mlxparam(dataset_file, data_path, logfile):
             sp, ifs, b = dp.prepare_sample(d, precise_pocket=True)
             mlxp.record(sp, ifs, b, logfile)
         except Exception as e:
-            print(f"pdb {d}训练过程中出错，此样本作废.")
+            print(f"pdb {d}训练过程中出错: {e}，此样本作废.")
 
 
 # ==============================
@@ -148,7 +164,7 @@ def iweight(logfile):
     help="数据路径"
 )
 @click.option(
-    "--logfile",
+    "--feature_path",
     required=True,
     type=click.Path(exists=True),
     help="预特征存放路径"
@@ -190,12 +206,6 @@ def prefeat(dataset_file, data_path, feature_path):
     help="预特征文件路径"
 )
 @click.option(
-    "--prefeats",
-    required=True,
-    type=click.Path(exists=True),
-    help="预特征存放路径"
-)
-@click.option(
     "--train_nums",
     type=int,
     help="训练集数量"
@@ -203,6 +213,7 @@ def prefeat(dataset_file, data_path, feature_path):
 @click.option(
     "--test_nums",
     type=int,
+    default=100,
     help="测试集数量(默认从倒数开始取)"
 )
 def iweight_bypre(name, prelogs, prefeats, train_nums, test_nums):
@@ -216,6 +227,8 @@ def iweight_bypre(name, prelogs, prefeats, train_nums, test_nums):
         pdb_ids.append(pl)
     if not train_nums or train_nums > len(pdb_ids):
         train_nums = len(pdb_ids)
+    if test_nums > len(pdb_ids):
+        test_nums = len(pdb_ids)
     workflow_bypre(name, pdb_ids[:train_nums], pdb_ids[-test_nums:], prelogs, prefeats)
 
 

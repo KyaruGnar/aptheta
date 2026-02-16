@@ -14,80 +14,133 @@ from proteinmpnn.protein_mpnn_utils import (gather_nodes, parse_PDB, tied_featur
 import fix
 import os
 from parameter import set_seed
-from iweight import workflow_bypre
+from iweight import *
 from repro_vina import workflow_with_DockingModel
-
-
-
 import sys
 import yaml
 import re
 from pathlib import Path
-
-# import chardet
-
-# # 检测文件编码
-# with open("./env/env.yml", 'rb') as f:
-#     raw_data = f.read()
-#     result = chardet.detect(raw_data)
-#     encoding = result['encoding']
-#     print(f"检测到编码: {encoding}")
-
-def clean_conda_dep(dep: str) -> str:
-    """
-    去除 build 编号
-    numpy=1.26.4=py310h5f9d8c6_0
-    → numpy=1.26.4
-    """
-    parts = dep.split("=")
-    if len(parts) >= 2:
-        return "=".join(parts[:2])
-    return dep
+from extcall import rmsd_eval, vina
 
 
-def split_env_file(env_path: Path):
-    with open(env_path, "r", encoding="utf-16") as f:
-        env_data = yaml.safe_load(f)
+# test_logfile = "test1.txt"
+# os.remove(test_logfile)
+# if not os.path.exists(test_logfile):
+#     for pdb_id in ["5lch"]:
+#         plog = fileio.read_file_lines(f"./log//202602100945/{pdb_id}")
+#         if plog[-1] == "":
+#             plog.pop()
+#         fileio.write_file_lines(test_logfile, plog, True)
+# test_samples = parse_logfile2(test_logfile, "./data/PDBbind_v2020_PL")
+# test_dataset = ProteinDataset(test_samples)
+# test_dataset.pre_generate(["5lch"], "./features")
+# test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False)
 
-    conda_deps = []
-    pip_deps = []
+# trainer = IWeightTrainer()
+# trainer.setup_model()
+# checkpoint = torch.load('best_model.pth')
+# trainer.model.load_state_dict(checkpoint['model_state_dict'])
+# predictions = trainer.predict(test_loader)
+# print(f"预测结果: {predictions}")
 
-    for dep in env_data.get("dependencies", []):
-        if isinstance(dep, str):
-            if dep != "pip":
-                conda_deps.append(clean_conda_dep(dep))
-            else:
-                conda_deps.append("pip")
+# dp = PDBBindDataSet("./data/PDBbind_v2020_PL")
+# for i, t in enumerate(test_dataset):
+#     rd = test_samples[i]
+#     sp, ifs, b = dp.prepare_sample(rd[0], precise_pocket=True)
+#     print(f"pdb_id: {rd[0]}")
+#     weights = {
+#         "Gauss1": -0.035579 * (1+predictions[i][0]),
+#         "Gauss2": -0.005156 * (1+predictions[i][1]),
+#         "Repulsion": 0.840245 * (1+predictions[i][2]),
+#         "Hydrophobic": -0.035069 * (1+predictions[i][3]),
+#         "Hydrogen bonding": -0.587439 * (1+predictions[i][4]),
+#         "Glue": 50,
+#         "Rot": 0.05846 * (1+predictions[i][5])
+#     }
+#     ofp = f"./out_weights.pdbqt"
+#     vina(ifs, b, ofp, weights)
+#     rmsd = rmsd_eval(ifs, ofp)
+#     res = f"pdb_id: {rd[0]}, xb_rmsd: {rd[4]}, xa_rmsd: {rd[5]}, iw_rmsd: {rmsd[0]}.\n"
+#     print(res)
+# input_files = {"receptor": "./5lch/5lch_protein.pdbqt", "ligands": ['./5lch/5lch_ligand.pdbqt']}
+# output_file = "./5lch/mlxparam/out7.pdbqt"
+# print(rmsd_eval(input_files, output_file))
+# f = "pred_res_sample4500liner3proj256.txt"
+# log = fileio.read_file_lines(f)
+# if log[-1] == "":
+#     log.pop()
+# data = []
+# for l in log:
+#     d = l.split(",")
+#     xb = float(d[1].split(":")[1].strip())
+#     xa = float(d[2].split(":")[1].strip())
+#     iw = float(d[3].split(":")[1].strip()[:-1])
+#     data.append([xb, xa, iw])
 
-        elif isinstance(dep, dict) and "pip" in dep:
-            for p in dep["pip"]:
-                pip_deps.append(p.strip())
+# # import chardet
 
-    env_data.pop("prefix", None)
+# # # 检测文件编码
+# # with open("./env/env.yml", 'rb') as f:
+# #     raw_data = f.read()
+# #     result = chardet.detect(raw_data)
+# #     encoding = result['encoding']
+# #     print(f"检测到编码: {encoding}")
 
-    new_env_data = {
-        "name": env_data.get("name", "env"),
-        "channels": env_data.get("channels", []),
-        "dependencies": conda_deps,
-    }
-
-    conda_output = env_path.with_name(env_path.stem + "_conda.yml")
-    pip_output = env_path.with_name("requirements.txt")
-
-    with open(conda_output, "w") as f:
-        yaml.dump(new_env_data, f, sort_keys=False)
-
-    if pip_deps:
-        with open(pip_output, "w") as f:
-            f.write("\n".join(pip_deps))
-
-    # 生成安装脚本
-
-    print(f"✔ Generated: {conda_output}")
-    print(f"✔ Generated: {pip_output}")
+# def clean_conda_dep(dep: str) -> str:
+#     """
+#     去除 build 编号
+#     numpy=1.26.4=py310h5f9d8c6_0
+#     → numpy=1.26.4
+#     """
+#     parts = dep.split("=")
+#     if len(parts) >= 2:
+#         return "=".join(parts[:2])
+#     return dep
 
 
-split_env_file(Path("./env/env.yml"))
+# def split_env_file(env_path: Path):
+#     with open(env_path, "r", encoding="utf-16") as f:
+#         env_data = yaml.safe_load(f)
+
+#     conda_deps = []
+#     pip_deps = []
+
+#     for dep in env_data.get("dependencies", []):
+#         if isinstance(dep, str):
+#             if dep != "pip":
+#                 conda_deps.append(clean_conda_dep(dep))
+#             else:
+#                 conda_deps.append("pip")
+
+#         elif isinstance(dep, dict) and "pip" in dep:
+#             for p in dep["pip"]:
+#                 pip_deps.append(p.strip())
+
+#     env_data.pop("prefix", None)
+
+#     new_env_data = {
+#         "name": env_data.get("name", "env"),
+#         "channels": env_data.get("channels", []),
+#         "dependencies": conda_deps,
+#     }
+
+#     conda_output = env_path.with_name(env_path.stem + "_conda.yml")
+#     pip_output = env_path.with_name("requirements.txt")
+
+#     with open(conda_output, "w") as f:
+#         yaml.dump(new_env_data, f, sort_keys=False)
+
+#     if pip_deps:
+#         with open(pip_output, "w") as f:
+#             f.write("\n".join(pip_deps))
+
+#     # 生成安装脚本
+
+#     print(f"✔ Generated: {conda_output}")
+#     print(f"✔ Generated: {pip_output}")
+
+
+# split_env_file(Path("./env/env.yml"))
 
 # workflow_with_DockingModel(example=0)
 # workflow_with_DockingModel(example=1)
@@ -95,12 +148,12 @@ split_env_file(Path("./env/env.yml"))
 # sample_path = "./data/1234"
 # print(os.path.split(sample_path))
 
-# pre_log_file = "./log/202602100945"
-# pre_fea_file = "./features"
-# pdb_ids = []
-# for pi in os.listdir(pre_log_file):
-#     pdb_ids.append(pi)
-# workflow_bypre("sample4500liner3proj512", pdb_ids[:4500], pdb_ids[-100:], pre_log_file, pre_fea_file)
+pre_log_file = "./log/202602100945"
+pre_fea_file = "./features"
+pdb_ids = []
+for pi in os.listdir(pre_log_file):
+    pdb_ids.append(pi)
+workflow_bypre("s5229l3p256", pdb_ids[:5229], pdb_ids[-100:], pre_log_file, pre_fea_file)
 
 # print(extract_sequences_from_pdb(".\\data\\PDBbind_v2020_PL/3buo/3buo_protein_atoms.pdb"))
 # chain_selected = None

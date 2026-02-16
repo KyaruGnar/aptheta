@@ -120,6 +120,7 @@ class IWeightTrainer:
         self.history = {
             'train_loss': [], 'val_loss': [],
             'train_rmse': [], 'val_rmse': [],
+            'lr': []
         }
 
     def setup_device(self, device: str) -> torch.device:
@@ -219,6 +220,7 @@ class IWeightTrainer:
             self.history['val_loss'].append(val_loss)
             self.history['train_rmse'].append(train_rmse)
             self.history['val_rmse'].append(val_rmse)
+            self.history['lr'].append(current_lr)
             # 打印进度
             print(f"{epoch+1:>4}/{epochs} {train_loss:>10.6f} {val_loss:>10.6f} {current_lr:>9.2e}")
             # 早停检查
@@ -275,8 +277,7 @@ class IWeightTrainer:
         ax3.set_ylabel('Validation Loss', color='red')
         ax3.tick_params(axis='y', labelcolor='red')
         ax3_2 = ax3.twinx()
-        ax3_2.plot([self.optimizer.param_groups[0]['lr']] * len(self.history['val_loss']), 
-                  label='Learning Rate', color='blue', linestyle='--')
+        ax3_2.plot(self.history['lr'], label='Learning Rate', color='blue', linestyle='--')
         ax3_2.set_ylabel('Learning Rate', color='blue')
         ax3_2.tick_params(axis='y', labelcolor='blue')
         ax3_2.set_title('Learning Rate Schedule')
@@ -330,7 +331,7 @@ def workflow(logfile: str, seed: int = SEED):
     checkpoint = torch.load('best_model.pth')
     trainer.model.load_state_dict(checkpoint['model_state_dict'])
     predictions = trainer.predict(test_loader)
-    # print(f"预测结果: {predictions}")
+    print(f"预测结果: {predictions}")
 
     dp = DataPipeline()
     for i, di in enumerate(test_dataset.indices):
@@ -395,47 +396,48 @@ def workflow_bypre(name: str, pdb_ids: list[str], test_ids: list[str], log_filep
 
     # 4.初始化训练器
     trainer = IWeightTrainer()
-    trainer.setup_model(proj_dim=512)
+    trainer.setup_model()
 
     # 5. 开始训练
-    trainer.train(
-        train_loader=train_loader,
-        val_loader=val_loader,
-        epochs=300,
-        patience=45,
-        loss_fn=nn.MSELoss()
-    )
+    # trainer.train(
+    #     train_loader=train_loader,
+    #     val_loader=val_loader,
+    #     epochs=300,
+    #     patience=45,
+    #     loss_fn=nn.MSELoss()
+    # )
 
-    # # 6. 绘制训练历史
-    trainer.plot_training_history()
+    # # # 6. 绘制训练历史
+    # trainer.plot_training_history()
 
     # 7.加载最佳模型并进行预测
     checkpoint = torch.load('best_model.pth')
     trainer.model.load_state_dict(checkpoint['model_state_dict'])
     predictions = trainer.predict(test_loader)
-    # print(f"预测结果: {predictions}")
+    print(f"预测结果: {predictions}")
 
-    dp = PDBBindDataSet("./data/PDBbind_v2020_PL")
-    for i, t in enumerate(test_dataset):
-        rd = test_samples[i]
-        sp, ifs, b = dp.prepare_sample(rd[0], precise_pocket=True)
-        print(f"pdb_id: {rd[0]}")
-        weights = {
-            "Gauss1": -0.035579 * (1+predictions[i][0]),
-            "Gauss2": -0.005156 * (1+predictions[i][1]),
-            "Repulsion": 0.840245 * (1+predictions[i][2]),
-            "Hydrophobic": -0.035069 * (1+predictions[i][3]),
-            "Hydrogen bonding": -0.587439 * (1+predictions[i][4]),
-            "Glue": 50,
-            "Rot": 0.05846 * (1+predictions[i][5])
-        }
-        ofp = f"{sp}/out_weights.pdbqt"
-        vina(ifs, b, ofp, weights)
-        rmsd = rmsd_eval(ifs, ofp)
-        res = f"pdb_id: {rd[0]}, xb_rmsd: {rd[4]}, xa_rmsd: {rd[5]}, iw_rmsd: {rmsd[0]}.\n"
-        print(res)
-        os.remove(ofp)
-        fileio.write_file_text(f"{name}.txt", res, append=True)
+    # dp = PDBBindDataSet("./data/PDBbind_v2020_PL")
+    # for i, t in enumerate(test_dataset):
+    #     rd = test_samples[i]
+    #     sp, ifs, b = dp.prepare_sample(rd[0], precise_pocket=True)
+    #     print(f"pdb_id: {rd[0]}")
+    #     weights = {
+    #         "Gauss1": -0.035579 * (1+predictions[i][0]),
+    #         "Gauss2": -0.005156 * (1+predictions[i][1]),
+    #         "Repulsion": 0.840245 * (1+predictions[i][2]),
+    #         "Hydrophobic": -0.035069 * (1+predictions[i][3]),
+    #         "Hydrogen bonding": -0.587439 * (1+predictions[i][4]),
+    #         "Glue": 50,
+    #         "Rot": 0.05846 * (1+predictions[i][5])
+    #     }
+    #     ofp = f"{sp}/out_weights.pdbqt"
+    #     vina(ifs, b, ofp, weights)
+    #     rmsd = rmsd_eval(ifs, ofp)
+    #     res = f"pdb_id: {rd[0]}, xb_rmsd: {rd[4]}, xa_rmsd: {rd[5]}, iw_rmsd: {rmsd[0]}.\n"
+    #     print(res)
+    #     if rd[0] != "5lch":
+    #         os.remove(ofp)
+    #     fileio.write_file_text(f"{name}.txt", res, append=True)
 
 
 if __name__ == "__main__":
