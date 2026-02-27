@@ -1,5 +1,5 @@
 
-##项目代码结构：  
+## 项目代码结构：  
 aptheta/  
 ├── data/                       # 数据  
 │   ├── self-bulit/             # 自建数据集  
@@ -51,7 +51,7 @@ aptheta/
 
 
 
-##命令行调用  
+## 命令行调用  
 通过aptheta.py提供了部分命令行调用的功能。  
 准备：虚拟环境安装完成并激活，在program根目录下执行：  
 python ./code/aptheta.py 子命令 参数  

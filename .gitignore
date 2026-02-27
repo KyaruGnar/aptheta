@@ -6,8 +6,7 @@ __pycache__/
 /data/
 
 # ml result
-/log/
-/log3/
+/log*/
 
 # feat result
 /features/
@@ -19,3 +18,4 @@ __pycache__/
 
 # test
 /test/
+/code/test.py

@@ -75,11 +75,12 @@ def vina_loss(energies, print_mode: bool = False):
 def weights_loss(inital_weights: nn.ParameterDict, weights: nn.ParameterDict, print_mode: bool = False):
     loss = 0.0
     for key in weights:
-        loss += torch.tan(
-            torch.pow(
-                torch.log(weights[key] / inital_weights[key])
-                /torch.log(torch.tensor(4)), 2)
-            * torch.pi / 2)
+        loss += torch.pow(torch.log(weights[key] / inital_weights[key]), 2)
+        # loss += torch.tan(
+        #     torch.pow(
+        #         torch.log(weights[key] / inital_weights[key])
+        #         /torch.log(torch.tensor(4)), 2)
+        #     * torch.pi / 2)
         if print_mode:
             print(f"{key}: {weights[key].item():.7f}", end="; ")
     if print_mode:
@@ -138,7 +139,7 @@ class MlXParamTrainer:
             speed_up = False
         else:
             speed_up = True
-            os.makedirs("/dev/shm/aptheta", exist_ok=True)
+            os.makedirs(f"/dev/shm/aptheta/mlxparam/{os.path.split(sample_path)[1]}", exist_ok=True)
         if self.model is None:
             raise RuntimeError("Model is not initialized.")
         self.model.initialize_weights()
@@ -183,8 +184,11 @@ class MlXParamTrainer:
                     break
                 if print_mode:
                     print(f"Retain output of outer epoch {best_epoch+1:03}.")
-            if speed_up:
-                shutil.move(f"/dev/shm/aptheta/mlxparam/{os.path.split(sample_path)[1]}", f"{sample_path}/mlxparam")
+        if speed_up:
+            if os.path.exists(f"{sample_path}/mlxparam/new_loss"):
+                shutil.rmtree(f"{sample_path}/mlxparam/new_loss")
+            os.makedirs(f"{sample_path}/mlxparam/new_loss", exist_ok=True)
+            shutil.move(f"/dev/shm/aptheta/mlxparam/{os.path.split(sample_path)[1]}", f"{sample_path}/mlxparam/new_loss")
         return best_weights, best_index, best_epoch
 
     def record(self, sample_path: str, input_files: dict, box: dict, filepath: str, print_mode: bool = False):
