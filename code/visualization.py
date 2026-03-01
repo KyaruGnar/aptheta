@@ -1,7 +1,6 @@
 """
 visualization.py进行了项目使用过程中所用到的可视化部分:
 """
-
 import math
 import os
 from matplotlib.patches import Patch
@@ -10,19 +9,11 @@ import numpy as np
 import torch
 from data_pipeline import parse_logfile, parse_logfile2
 from aptheta_utils import fileio
-from parameter import SEED
+from parameter import SEED, set_seed
 from torch.utils.data import random_split
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置字体为黑体
 plt.rcParams['axes.unicode_minus'] = False
-
-
-# 0.种子设置
-def set_seed(seed: int = SEED) -> None:
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-
 
 # 1.数据分布展示
 # 思路: x轴表示绝对值, y轴表示百分比
@@ -303,6 +294,18 @@ def workflow2(logfile: str):
 
     show_data_distribution_ex(visual_dataset)
 
+# ex.1.1给定损失函数修改前后的标签数据，绘制第一阶段变化情况（标签数据指标的好坏）的数据分布直方图
+def workflow21(log_b: str, log_a: str):
+    # 1.创建初始数据集
+    before_dataset = parse_logfile2(log_b, "./data/PDBbind_v2020_PL")
+    after_dataset = parse_logfile2(log_a, "./data/PDBbind_v2020_PL")
+    visual_dataset = []
+    for i, rd in enumerate(after_dataset):
+        visual_dataset.append([rd[0], before_dataset[i][5], rd[5]])
+    print(f"数据集大小: {len(visual_dataset)}")
+    show_data_distribution_ex(visual_dataset)
+
+
 # ex.2数据分布直方图
 def workflow3(logfile: str):
     # 0.初始准备
@@ -325,10 +328,110 @@ def workflow3(logfile: str):
     show_data_distribution_ex2(data)
 
 
+def show_data_bygptmethods(data):
+    # =============================
+    # 替换为你的数据
+    # =============================
+    # 示例：假设它们都是 numpy array
+    target = np.array(d[0] for d in data)
+    baseline_pred = np.array(d[1] for d in data)
+    model_pred = np.array(d[2] for d in data)
+
+    # =============================
+    # 基础计算
+    # =============================
+    baseline_residual = baseline_pred - target
+    model_residual = model_pred - target
+
+    rmse_baseline = np.sqrt(mean_squared_error(target, baseline_pred))
+    rmse_model = np.sqrt(mean_squared_error(target, model_pred))
+
+    mae_baseline = mean_absolute_error(target, baseline_pred)
+    mae_model = mean_absolute_error(target, model_pred)
+
+    improvement = np.abs(baseline_residual) - np.abs(model_residual)
+
+    # =============================
+    # 1️⃣ Target vs Baseline
+    # =============================
+    plt.figure()
+    plt.scatter(target, baseline_pred, alpha=0.3)
+    plt.plot([target.min(), target.max()],
+            [target.min(), target.max()])
+    plt.xlabel("Target")
+    plt.ylabel("Baseline Prediction")
+    plt.title(f"Baseline vs Target (RMSE={rmse_baseline:.3f})")
+    plt.tight_layout()
+    plt.show()
+
+    # =============================
+    # 2️⃣ Target vs Model
+    # =============================
+    plt.figure()
+    plt.scatter(target, model_pred, alpha=0.3)
+    plt.plot([target.min(), target.max()],
+            [target.min(), target.max()])
+    plt.xlabel("Target")
+    plt.ylabel("Model Prediction")
+    plt.title(f"Model vs Target (RMSE={rmse_model:.3f})")
+    plt.tight_layout()
+    plt.show()
+
+    # =============================
+    # 3️⃣ 残差分布对比
+    # =============================
+    plt.figure()
+    plt.hist(baseline_residual, bins=50, alpha=0.5, label="Baseline Residual")
+    plt.hist(model_residual, bins=50, alpha=0.5, label="Model Residual")
+    plt.axvline(0)
+    plt.xlabel("Residual")
+    plt.ylabel("Frequency")
+    plt.title("Residual Distribution Comparison")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+    # =============================
+    # 4️⃣ RMSE / MAE 柱状图
+    # =============================
+    plt.figure()
+    metrics = ["RMSE", "MAE"]
+    baseline_values = [rmse_baseline, mae_baseline]
+    model_values = [rmse_model, mae_model]
+
+    x = np.arange(len(metrics))
+    width = 0.35
+
+    plt.bar(x - width/2, baseline_values, width, label="Baseline")
+    plt.bar(x + width/2, model_values, width, label="Model")
+
+    plt.xticks(x, metrics)
+    plt.ylabel("Error")
+    plt.title("Error Metric Comparison")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+    # =============================
+    # 5️⃣ 改进量散点图（进阶）
+    # =============================
+    plt.figure()
+    plt.scatter(target, improvement, alpha=0.3)
+    plt.axhline(0)
+    plt.xlabel("Target")
+    plt.ylabel("Absolute Error Improvement")
+    plt.title("Improvement over Baseline")
+    plt.tight_layout()
+    plt.show()
+
 
 if __name__ == "__main__":
-    workflow3("s5229l3pd256.txt")
-    # workflow("log.txt")
+    set_seed()
+    workflow3("./test/0228single/single.txt")
+    # workflow3("s5229l3pd256.txt")
+    # workflow3("s5229l3p256_nl.txt")
+    # workflow2("test.txt")
+    # workflow21("test_b.txt", "test_a.txt")
     # workflow("./log/20251023010518/result.txt")
     # show_pdbbind_chain("F:\\program\\test\\data")
     # show_pdbbind_chain("F:\\PDBbind\\2020\\PDBbind_v2020_PL")

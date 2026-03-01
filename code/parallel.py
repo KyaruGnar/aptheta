@@ -41,7 +41,7 @@ args = parser.parse_args()
 def redirect_stdout_stderr(log_file):
     if sys.platform == "linux" and os.path.exists("/dev/shm"):
         os.makedirs("/dev/shm/aptheta/log", exist_ok=True)
-        log_file = (f"/dev/shm/aptheta/log/{os.path.split(log_file)[1]}")
+        log_file = f"/dev/shm/aptheta/log/{os.path.split(log_file)[1]}"
     else:
         os.makedirs(f"{os.path.dirname(log_file)}/log_run", exist_ok=True)
         log_file = f"{os.path.dirname(log_file)}/log_run/{os.path.basename(log_file)}"
@@ -127,4 +127,4 @@ if __name__ == "__main__":
     print(f"任务总数: {len(samples_with_log)}, 成功任务数: {result[0]}. 失败样本将保存至文件.")
     fileio.write_file_lines(os.path.normpath(f"{args.log_path}/failure_ids.txt"), result[1])
     if sys.platform == "linux" and os.path.exists("/dev/shm"):
-        shutil.move("/dev/shm/aptheta/log", f"{args.log_path}_run")   
+        shutil.move("/dev/shm/aptheta/log", f"{args.log_path}_run")

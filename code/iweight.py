@@ -18,19 +18,12 @@ from torch import nn, optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import random_split, DataLoader, Dataset
 from data_pipeline import parse_logfile, parse_logfile2, DataPipeline, PDBBindDataSet
-from parameter import SEED
+from parameter import SEED, set_seed
 from featurer import FeatureCollector
 from aptheta_utils import fileio
 from extcall import rmsd_eval, vina
 
 # 零.初始准备
-# 1.随机准备
-def set_seed(seed: int = SEED) -> None:
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-
 # 2.设备准备
 DEVICE = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
 # DEVICE = torch.device("cpu")
@@ -373,12 +366,13 @@ def workflow_bypre(name: str, pdb_ids: list[str], test_ids: list[str], log_filep
     dataset.pre_generate(pdb_ids, feature_filepath)
     # 1.2.创建测试集
     test_logfile = "test.txt"
-    if not os.path.exists(test_logfile):
-        for pdb_id in test_ids:
-            plog = fileio.read_file_lines(f"{log_filepath}/{pdb_id}")
-            if plog[-1] == "":
-                plog.pop()
-            fileio.write_file_lines(test_logfile, plog, True)
+    if os.path.exists(test_logfile):
+        os.remove(test_logfile)
+    for pdb_id in test_ids:
+        plog = fileio.read_file_lines(f"{log_filepath}/{pdb_id}")
+        if plog[-1] == "":
+            plog.pop()
+        fileio.write_file_lines(test_logfile, plog, True)
     test_samples = parse_logfile2(test_logfile, "./data/PDBbind_v2020_PL")
     test_dataset = ProteinDataset(test_samples)
     test_dataset.pre_generate(test_ids, feature_filepath)
@@ -399,16 +393,16 @@ def workflow_bypre(name: str, pdb_ids: list[str], test_ids: list[str], log_filep
     trainer.setup_model()
 
     # 5. 开始训练
-    # trainer.train(
-    #     train_loader=train_loader,
-    #     val_loader=val_loader,
-    #     epochs=300,
-    #     patience=45,
-    #     loss_fn=nn.MSELoss()
-    # )
+    trainer.train(
+        train_loader=train_loader,
+        val_loader=val_loader,
+        epochs=300,
+        patience=45,
+        loss_fn=nn.MSELoss()
+    )
 
-    # # # 6. 绘制训练历史
-    # trainer.plot_training_history()
+    # 6. 绘制训练历史
+    trainer.plot_training_history()
 
     # 7.加载最佳模型并进行预测
     checkpoint = torch.load('best_model.pth')
@@ -416,28 +410,27 @@ def workflow_bypre(name: str, pdb_ids: list[str], test_ids: list[str], log_filep
     predictions = trainer.predict(test_loader)
     print(f"预测结果: {predictions}")
 
-    # dp = PDBBindDataSet("./data/PDBbind_v2020_PL")
-    # for i, t in enumerate(test_dataset):
-    #     rd = test_samples[i]
-    #     sp, ifs, b = dp.prepare_sample(rd[0], precise_pocket=True)
-    #     print(f"pdb_id: {rd[0]}")
-    #     weights = {
-    #         "Gauss1": -0.035579 * (1+predictions[i][0]),
-    #         "Gauss2": -0.005156 * (1+predictions[i][1]),
-    #         "Repulsion": 0.840245 * (1+predictions[i][2]),
-    #         "Hydrophobic": -0.035069 * (1+predictions[i][3]),
-    #         "Hydrogen bonding": -0.587439 * (1+predictions[i][4]),
-    #         "Glue": 50,
-    #         "Rot": 0.05846 * (1+predictions[i][5])
-    #     }
-    #     ofp = f"{sp}/out_weights.pdbqt"
-    #     vina(ifs, b, ofp, weights)
-    #     rmsd = rmsd_eval(ifs, ofp)
-    #     res = f"pdb_id: {rd[0]}, xb_rmsd: {rd[4]}, xa_rmsd: {rd[5]}, iw_rmsd: {rmsd[0]}.\n"
-    #     print(res)
-    #     if rd[0] != "5lch":
-    #         os.remove(ofp)
-    #     fileio.write_file_text(f"{name}.txt", res, append=True)
+    dp = PDBBindDataSet("./data/PDBbind_v2020_PL")
+    for i, t in enumerate(test_dataset):
+        rd = test_samples[i]
+        sp, ifs, b = dp.prepare_sample(rd[0], precise_pocket=True)
+        print(f"pdb_id: {rd[0]}")
+        weights = {
+            "Gauss1": -0.035579 * (1+predictions[i][0]),
+            "Gauss2": -0.005156 * (1+predictions[i][1]),
+            "Repulsion": 0.840245 * (1+predictions[i][2]),
+            "Hydrophobic": -0.035069 * (1+predictions[i][3]),
+            "Hydrogen bonding": -0.587439 * (1+predictions[i][4]),
+            "Glue": 50,
+            "Rot": 0.05846 * (1+predictions[i][5])
+        }
+        ofp = f"{sp}/out_weights.pdbqt"
+        vina(ifs, b, ofp, weights)
+        rmsd = rmsd_eval(ifs, ofp)
+        res = f"pdb_id: {rd[0]}, xb_rmsd: {rd[4]}, xa_rmsd: {rd[5]}, iw_rmsd: {rmsd[0]}.\n"
+        print(res)
+        os.remove(ofp)
+        fileio.write_file_text(f"{name}.txt", res, append=True)
 
 
 if __name__ == "__main__":

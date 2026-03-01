@@ -19,3 +19,6 @@ __pycache__/
 # test
 /test/
 /code/test.py
+/loss_test2.txt
+/test1.txt
+/code/visualization.py

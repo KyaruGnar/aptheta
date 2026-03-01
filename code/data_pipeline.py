@@ -241,8 +241,8 @@ def parse_protein_pdb(pdb_id: str, protein_info: dict, data_path: str) -> None:
 
 # 2.从给定pdbqt文件中解析出对接盒子
 def parse_box_from_pdbqt(filepaths: list[str], allowance: float = 6.0) -> dict[str, float]:
-    min_x = min_y = min_z = 1e-9
-    max_x = max_y = max_z = -1e-9
+    min_x = min_y = min_z = 1e9
+    max_x = max_y = max_z = -1e9
     for filepath in filepaths:
         for record in fileio.read_file_lines(filepath):
             if record.startswith("ATOM"):

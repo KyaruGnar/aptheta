@@ -1,11 +1,13 @@
 """
 parameter.py文件归纳了项目中的参数
 
-Last update: 2026-02-15 by Junlin_409
-version: 1.0.0 标记
+Last update: 2026-02-28 by Junlin_409
+version: 1.1.0 完善随机种子
 """
 
 # 引入区
+import numpy as np
+import random
 import sys
 import torch
 
@@ -44,11 +46,12 @@ SEED = 2048
 
 # 1.种子设置
 def set_seed(seed: int = SEED) -> None:
+    random.seed(seed)
+    np.random.seed(seed)
     torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
-    print(f"当前机器学习种子: {SEED}.")
+    print(f"当前随机种子: {SEED}.")
 
 # 2.设备设置
 DEVICE = torch.device("cpu")
@@ -58,4 +61,4 @@ def set_device(device: str = "auto") -> None:
         DEVICE = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
     else:
         DEVICE = torch.device(device)
-    print(f"当前机器学习设备: {DEVICE}.")
+    print(f"当前学习设备: {DEVICE}.")
